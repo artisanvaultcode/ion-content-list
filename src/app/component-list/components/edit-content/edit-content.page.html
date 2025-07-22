@@ -1,0 +1,16 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+    </ion-buttons>
+    <ion-title>{{ getFormTitle() }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <app-dynamic-form
+    [config]="currentConfig"
+    (formSubmit)="onFormSubmit($event)"
+    (formReset)="onFormReset()"
+  ></app-dynamic-form>
+</ion-content>

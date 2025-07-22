@@ -1,0 +1,171 @@
+<div class="content-slider-container">
+  <!-- Header Section -->
+  <div class="slider-header">
+    <ion-searchbar
+      [placeholder]="searchPlaceholder"
+      [value]="searchTerm"
+      (ionInput)="onSearch($event)"
+      (ionClear)="onClearSearch()"
+      [debounce]="300"
+      show-clear-button="focus"
+      class="custom-searchbar">
+    </ion-searchbar>
+    <!-- Selection Info and Add Button -->
+
+    @if (selectedItems$ | async; as selectedItems) {
+      <div class="selection-info" >
+        <span class="selection-count">
+          @if (maxSelections > 0) {
+            <ng-container >
+              {{selectedItems.length}} / {{maxSelections}} selected
+            </ng-container>
+          }
+          @if (maxSelections === 0) {
+            <ng-container>
+              {{selectedItems.length}} selected
+            </ng-container>
+          }
+        </span>
+
+        <div class="action-buttons">
+          @if (hasMore$ | async) {
+            <ion-button
+              fill="solid"
+              [disabled]="isLoading$ | async"
+              (click)="onLoadMore()">
+              <ion-icon name="refresh"></ion-icon>
+            </ion-button>
+          }
+          @if (showAddButton && selectedItems.length > 0) {
+            <ion-button
+              fill="solid"
+              [disabled]="isLoading$ | async"
+              (click)="onAddSelectedItems()">
+              <ion-icon name="add" ></ion-icon>
+            </ion-button>
+          }
+
+          @if (selectedItems.length > 0) {
+            <ion-button
+              fill="clear"
+              (click)="clearSelection()"
+              class="clear-selection-btn">
+              <ion-icon name="close" slot="icon-only"></ion-icon>
+            </ion-button>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+
+  <!-- Error State -->
+  @if (error$ | async; as error ) {
+    <ion-card class="error-card">
+      <ion-card-content>
+        <ion-icon name="alert-circle" color="danger"></ion-icon>
+        <p>{{ error }}</p>
+      </ion-card-content>
+    </ion-card>
+  }
+
+  <!-- Content Items -->
+  <div class="slider-content">
+    @if (filteredItems$ | async; as items ) {
+      <div
+        class="items-container">
+
+        <!-- Empty State -->
+        <div *ngIf="items.length === 0 && !(isLoading$ | async)" class="empty-state">
+          <ion-icon name="search" size="large"></ion-icon>
+          <h3>No items found</h3>
+          <p>Try adjusting your search terms</p>
+        </div>
+        @if (items.length > 0) {
+          <div class="items-scroll-container">
+            <div class="items-list">
+              @for (item of items ; track $index) {
+                <div class="item-wrapper"
+                  [class.selected]="isItemSelected(item) | async"
+                  [class.disabled]="!item.enabled"
+                  (click)="onItemClick(item)">
+
+                  <div
+                    class="content-item"
+                    [style.background-color]="item.backgroundColor"
+                    [style.color]="item.textColor">
+
+                    <!-- Selection Indicator -->
+                    @if (isItemSelected(item) | async) {
+                      <div class="selection-indicator">
+                        <ion-icon name="checkmark-circle" color="light"></ion-icon>
+                      </div>
+                    }
+
+                    <!-- Item Content -->
+                    <div class="item-content">
+                      <ion-icon [name]="item.icon" class="item-icon"></ion-icon>
+                      <div class="item-text">
+                        <h3 class="item-title">{{ item.title }}</h3>
+                        @if (item.description) {
+                          <p class="item-description" >
+                            {{ item.description }}
+                          </p>
+                        }
+                      </div>
+                    </div>
+
+                    <!-- Disabled Overlay -->
+                    @if (!item.enabled) {
+                      <div class="disabled-overlay">
+                        <ion-icon name="ban" color="medium"></ion-icon>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+
+            </div>
+          </div>
+        }
+        <!-- Items List -->
+      </div>
+    }
+
+    <!-- Loading State -->
+    @if (isLoading$  | async ) {
+      <div class="loading-container">
+        <ion-spinner name="crescent"></ion-spinner>
+        <p>Loading items...</p>
+      </div>
+    }
+  </div>
+
+  <!-- Selection Summary -->
+  @if (selectedItems$ | async; as selectedItems ) {
+    <div class="selection-summary" >
+      @if (selectedItems.length > 0) {
+        <div class="selected-items">
+          <h4>Selected Items:</h4>
+          <div class="selected-items-list">
+            @for (item of selectedItems ; track $index) {
+              <div
+                class="selected-item-chip"
+                [style.background-color]="item.backgroundColor"
+                [style.color]="item.textColor">
+                <ion-icon [name]="item.icon" size="small"></ion-icon>
+                <span>{{ item.title }}</span>
+                <ion-icon
+                  name="close"
+                  size="small"
+                  (click)="onItemDeselect(item)"
+                  class="remove-icon"></ion-icon>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+    </div>
+  }
+</div>

@@ -1,0 +1,224 @@
+<ion-item
+  class="color-item"
+  [style.--background]="currentColor().value"
+  [style.--color]="currentColor().textColor || getContrastColor(currentColor().value)">
+
+  <!-- Item Content -->
+  <ion-label
+    [style.--button-color]="getButtonTextColor()">
+      Custom Colors
+  </ion-label>
+  <!-- Color Change Button -->
+  <ion-button
+    slot="end"
+    fill="clear"
+    shape="round"
+    [id]="'color-trigger-' + componentId"
+    class="color-change-btn"
+    [style.--button-background]="getButtonBackground()"
+    [style.--button-color]="getButtonTextColor()">
+    <ion-icon name="color-palette-outline" slot="icon-only"></ion-icon>
+    <ion-ripple-effect></ion-ripple-effect>
+  </ion-button>
+
+  <ion-button
+    slot="end"
+    fill="clear"
+    shape="round"
+    [id]="'text-color-trigger-' + componentId"
+    class="color-change-btn"
+    [style.--button-background]="getButtonBackground()"
+    [style.--button-color]="getButtonTextColor()">
+    <ion-icon name="text-outline" slot="icon-only"></ion-icon>
+    <ion-ripple-effect></ion-ripple-effect>
+  </ion-button>
+
+  <ion-button
+    slot="end"
+    fill="clear"
+    shape="round"
+    class="color-change-btn"
+    [style.--button-background]="getButtonBackground()"
+    [style.--button-color]="getButtonTextColor()"
+    (click)="applyColor()"
+  >
+    <ion-icon name="save" slot="icon-only"></ion-icon>
+    <ion-ripple-effect></ion-ripple-effect>
+  </ion-button>
+  <!-- Color Picker Popover -->
+  <ion-popover
+    [trigger]="'color-trigger-' + componentId"
+    [showBackdrop]="true"
+    class="color-popover">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title size="small">
+            <ion-icon name="eyedrop-outline"></ion-icon>
+            Choose Background Color
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="color-picker-content">
+        <div class="section-header">
+          <h3>Custom Color</h3>
+        </div>
+
+        <div class="custom-color-section">
+          <div class="color-input-wrapper">
+            <input
+              type="color"
+              #colorInput
+              [value]="customColor"
+              (input)="onCustomColorChange(colorInput.value)"
+              class="color-input"
+              id="customColorPicker"
+            />
+            <label for="customColorPicker" class="color-input-label">
+              <ion-icon name="eyedrop" class="eyedrop-icon"></ion-icon>
+              <span>Pick Custom Color</span>
+            </label>
+          </div>
+
+          <div class="custom-color-preview">
+            <div
+              class="color-preview-box"
+              [style.background]="customColor">
+            </div>
+            <div class="color-details">
+              <span class="hex-value">{{ customColor }}</span>
+              <span class="rgb-value">{{ getRgbFromHex(customColor) }}</span>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            fill="solid"
+            (click)="selectCustomColor()"
+            [disabled]="!customColor"
+            class="use-custom-btn">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Use This Color
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-button>
+        </div>
+
+        <!-- Predefined Colors -->
+        <div class="section-header">
+          <h3>Predefined Colors</h3>
+        </div>
+
+        <ion-grid class="color-grid">
+          <ion-row>
+            @for (color of predefinedColors; track color.value; let i = $index) {
+              <ion-col size="3" class="color-col">
+                <div
+                  class="color-option"
+                  [class.selected]="currentColor().value === color.value"
+                  [style.background]="color.value"
+                  (click)="selectColor(color)">
+
+                  @if (currentColor().value === color.value) {
+                    <ion-icon name="checkmark-circle" class="selected-icon"></ion-icon>
+                  }
+
+                  <div class="color-tooltip">{{ color.name }}</div>
+                </div>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-grid>
+
+        <!-- Random Color Generator -->
+        <div class="section-header">
+          <h3>Random Color</h3>
+        </div>
+
+        <div class="random-section">
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="generateRandomColor()"
+            class="random-btn">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Generate Random Color
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+
+  <ion-popover
+    [trigger]="'text-color-trigger-' + componentId"
+    [showBackdrop]="true"
+    class="color-popover">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title size="small">
+            <ion-icon name="text-outline"></ion-icon>
+            Choose Text Color
+          </ion-title>
+        </ion-toolbar>
+      </ion-header>
+
+      <ion-content class="color-picker-content">
+        <div class="section-header">
+          <h3>Custom Text Color</h3>
+        </div>
+
+        <div class="custom-color-section">
+          <div class="color-input-wrapper">
+            <input
+              type="color"
+              #customTextColorInput
+              [value]="customTextColor" (input)="onCustomTextColorChange(customTextColorInput.value)" class="color-input"
+              id="customTextColorPicker"
+            />
+            <label for="customTextColorPicker" class="color-input-label">
+              <ion-icon name="eyedrop" class="eyedrop-icon"></ion-icon>
+              <span>Pick Custom Text Color</span>
+            </label>
+          </div>
+
+          <div class="custom-color-preview">
+            <div
+              class="color-preview-box"
+              [style.background]="customTextColor"> </div>
+            <div class="color-details">
+              <span class="hex-value">{{ customTextColor }}</span>
+              <span class="rgb-value">{{ getRgbFromHex(customTextColor) }}</span>
+            </div>
+          </div>
+
+          <ion-button
+            expand="block"
+            fill="solid"
+            (click)="selectCustomTextColor()" [disabled]="!customTextColor"
+            class="use-custom-btn">
+            <ion-icon name="checkmark-outline" slot="start"></ion-icon>
+            Use This Text Color
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-button>
+        </div>
+
+        <div class="section-header">
+          <h3>Random Text Color</h3>
+        </div>
+
+        <div class="random-section">
+          <ion-button
+            expand="block"
+            fill="outline"
+            (click)="generateRandomTextColor()" class="random-btn">
+            <ion-icon name="refresh-outline" slot="start"></ion-icon>
+            Generate Random Text Color
+            <ion-ripple-effect></ion-ripple-effect>
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-popover>
+</ion-item>

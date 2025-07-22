@@ -1,0 +1,162 @@
+ion-content {
+  --background: linear-gradient(#405162, #678c94);
+}
+
+.component-count-container {
+  display: flex;
+  justify-content: center;
+  padding: 8px 16px;
+  background: var(--ion-color-light);
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+
+  ion-spinner {
+    margin-bottom: 16px;
+  }
+}
+
+.component-item {
+  margin: 8px 16px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  ion-item {
+    --background: var(--ion-color-light);
+    --border-radius: 12px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --min-height: 72px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    &.disabled {
+      opacity: 0.6;
+
+      ion-label {
+        color: var(--ion-color-medium);
+      }
+    }
+  }
+
+  ion-avatar {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    //background: var(--ion-color-primary-tint);
+    border-radius: 50%;
+    margin-right: 16px;
+
+    ion-icon {
+      font-size: 24px;
+    }
+  }
+
+  ion-label {
+    h2 {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+
+  ion-toggle {
+    --handle-width: 20px;
+    --handle-height: 20px;
+  }
+}
+
+ion-item-sliding {
+  display: block;
+  position: relative;
+  width: 96%;
+  overflow: hidden;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 40px;
+  text-align: center;
+
+  ion-icon {
+    color: var(--ion-color-medium);
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    color: var(--ion-color-dark);
+    margin-bottom: 8px;
+  }
+
+  p {
+    color: var(--ion-color-medium);
+    margin-bottom: 32px;
+  }
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .component-item {
+    margin: 8px 8px;
+
+    ion-item {
+      --padding-start: 12px;
+      --padding-end: 12px;
+    }
+  }
+
+  ion-item-sliding {
+    display: block;
+    position: relative;
+    width: 98%;
+    overflow: hidden;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  }
+
+}
+
+swiper-container {
+  width: 100%;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+swiper-slide {
+  background-position: center;
+  background-size: cover;
+  width: 300px;
+  height: 300px;
+}
+
+swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

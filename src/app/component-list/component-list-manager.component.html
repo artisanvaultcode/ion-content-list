@@ -1,0 +1,158 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Profile Content</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onChangeGlobalColors()" [disabled]="(!(loading$ | async) && ((components$ | async)?.length === 0))">
+        <ion-icon name="color-palette" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onContentComponent()" [disabled]="!(canAddMore$ | async)">
+        <ion-icon name="apps" slot="icon-only"></ion-icon>
+      </ion-button>
+      <ion-button (click)="onSaveOrdered()" [disabled]="(!(loading$ | async) && ((components$ | async)?.length === 0)) || !listHasBeenReorder">
+        <ion-icon name="save" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content >
+  <!-- Search Bar -->
+  <ion-searchbar
+    [(ngModel)]="searchTerm"
+    (ionInput)="onSearchChange($event)"
+    placeholder="Search components..."
+    debounce="300">
+  </ion-searchbar>
+
+  <!-- Component Count -->
+  <div class="component-count-container">
+    <ion-chip color="primary">
+      <ion-label>{{ (componentCount$ | async) || 0 }} / {{ (maxComponents$ | async) || 0 }} components</ion-label>
+    </ion-chip>
+  </div>
+
+  <!-- Pull to Refresh -->
+  <ion-refresher slot="fixed" (ionRefresh)="onRefresh($event)">
+    <ion-refresher-content
+      pullingIcon="chevron-down-circle-outline"
+      pullingText="Pull to refresh"
+      refreshingSpinner="circles"
+      refreshingText="Refreshing...">
+    </ion-refresher-content>
+  </ion-refresher>
+
+  <!-- Loading State -->
+  @if (loading$ | async) {
+    <div class="loading-container">
+      <ion-spinner name="crescent"></ion-spinner>
+      <ion-label>Loading components...</ion-label>
+    </div>
+  }
+
+  @if (showContentIcons) {
+    <!-- Content Slider Component -->
+    <div class="slider-section">
+      <app-content-slider
+        [maxSelections]="maxSelections"
+        [itemsPerPage]="itemsPerPage"
+        [searchPlaceholder]="searchPlaceholder"
+        [addButtonText]="addButtonText"
+        [showAddButton]="showAddButton"
+        (selectionChange)="onSelectionChange($event)"
+        (itemSelect)="onItemSelect($event)"
+        (itemDeselect)="onItemDeselect($event)"
+        (loadMore)="onLoadItemMore()"
+        (addSelectedItems)="onAddSelectedItems($event)">
+      </app-content-slider>
+    </div>
+  }
+  @if (showGlobalColors) {
+    <app-custom-color-item
+      title="Background Theme"
+      subtitle="Choose your preferred color theme"
+      (colorChange)="onColorChange($event)"
+      (applyColorChange)="onApplyColorChange($event)"
+    >
+    </app-custom-color-item>
+  }
+  <!-- Component List -->
+  @if (!(loading$ | async)) {
+    <ion-list lines="none">
+      <ion-reorder-group
+      [disabled]="false"
+      (ionItemReorder)="onReorder($event)">
+
+        @for ( component of components$ | async; track $index) {
+          <ion-item-sliding class="component-item">
+            <!-- Main Item Content -->
+            <ion-item
+              [ngStyle]="{
+              '--background': component.content.backgroundColor,
+              '--color': component.content.textColor}"
+              (click)="onEditComponent(component)"
+              [class.disabled]="!component.content.enabled">
+
+              <!-- Reorder Handle -->
+              <ion-reorder slot="start">
+                <ion-icon name="reorder-two-outline"></ion-icon>
+              </ion-reorder>
+
+              <!-- Component Icon -->
+              <ion-avatar slot="start">
+                <ion-icon
+                  [name]="component.content.icon"
+                  [color]="component.content.enabled ? component.content.textColor : 'medium'">
+                </ion-icon>
+              </ion-avatar>
+
+              <!-- Component Info -->
+              <ion-label
+                [style.--color]="component.content.textColor" >
+                <h2>
+                  {{ component.content.title }}
+                </h2>
+                <p >{{ component.content.description }}</p>
+              </ion-label>
+
+              <!-- Toggle Switch -->
+              <ion-toggle
+                slot="end"
+                [checked]="component.enabled"
+                (ionChange)="onToggleComponent(component)"
+                (click)="$event.stopPropagation()">
+              </ion-toggle>
+            </ion-item>
+
+            <!-- Swipe Actions -->
+            <ion-item-options side="end">
+              <ion-item-option color="danger" (click)="onDeleteComponent(component)">
+                <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+              </ion-item-option>
+            </ion-item-options>
+          </ion-item-sliding>
+        }
+
+      </ion-reorder-group>
+    </ion-list>
+  }
+
+  <!-- Empty State -->
+  @if (!(loading$ | async) && ((components$ | async)?.length === 0)) {
+    <div class="empty-state">
+      <ion-icon name="hardware-chip-outline" size="large"></ion-icon>
+      <h2>No Contents Yet</h2>
+      <p>Add your first Profile Content to get started</p>
+    </div>
+  }
+  <!-- Infinite Scroll -->
+  @if ((getMoreItems$ | async)) {
+    <ion-infinite-scroll
+      (ionInfinite)="onLoadMore($event)">
+      <ion-infinite-scroll-content
+        loadingSpinner="bubbles"
+        loadingText="Loading more components...">
+      </ion-infinite-scroll-content>
+    </ion-infinite-scroll>
+  }
+
+</ion-content>

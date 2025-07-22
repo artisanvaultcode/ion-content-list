@@ -1,0 +1,325 @@
+<ion-grid>
+  <ion-row>
+    <!-- Preview Section -->
+    <ion-col size="12" size-md="6">
+      <ion-card>
+        <ion-card-content>
+          <div class="preview-container">
+            <div
+              class="preview-button"
+              [style.background-color]="previewData().backgroundColor"
+              [style.color]="previewData().textColor"
+            >
+              <ion-icon
+                [name]="previewData().icon"
+                slot="start"
+                class="preview-icon"
+              ></ion-icon>
+              <div class="preview-content">
+                <div class="preview-title">{{ previewData().title }}</div>
+                @if (previewData().description) {
+                  <div
+                    class="preview-description"
+                  >
+                    {{ previewData().description }}
+                  </div>
+                }
+                @if (previewData().type === 'license' && previewData().licenseNumber) {
+                  <div
+                    class="preview-license"
+                  >
+                    License: {{ previewData().licenseNumber }}
+                  </div>
+                }
+                @if (previewData().type === 'email' && previewData().email) {
+                  <div
+                    class="preview-email"
+                  >
+                    {{ previewData().email }}
+                  </div>
+                }
+                @if (previewData().type === 'phone' && previewData().phoneNumber) {
+                  <div
+                    class="preview-phone"
+                  >
+                    {{ previewData().phoneNumber }}
+                  </div>
+                }
+                @if ((previewData().type === 'youtube' || previewData().type === 'link') && previewData().link) {
+                  <div
+                    class="preview-link"
+                  >
+                    {{ previewData().link }}
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Image Preview for Image Type -->
+            @if (previewData().type === 'youtube' && previewData().link) {
+              <div class="video-preview">
+                <div
+                  class="youtube-thumbnail"
+                  [style.background-image]="'url(' + getYouTubeThumbnail(previewData().link) + ')'"
+                  (click)="openYouTubeVideo(previewData().link)">
+
+                  <div class="play-button">
+                    <ion-icon name="play-circle" size="large"></ion-icon>
+                  </div>
+
+                  @if (previewData().title) {
+                    <div class="video-title">{{ previewData().title }}</div>
+                  }
+                </div>
+              </div>
+            }
+
+            <!-- Image Preview for Image Type -->
+            @if (previewData().type === 'image' && previewData().imageUrl) {
+              <div
+                class="image-preview"
+              >
+                <img
+                  [src]="previewData().imageUrl"
+                  alt="Preview Image"
+                  class="preview-image"
+                  (error)="onImageError($event)"
+                />
+              </div>
+            }
+
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-col>
+    <!-- Form Section -->
+    <ion-col size="12" size-md="6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+            <!-- Dynamic Form Fields -->
+        @for (field of getFieldConfig(); track $index) {
+            <!-- Email Input -->
+            @if(field.type === 'email') {
+              <ion-item >
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <ion-input
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder"
+                  type="email"
+                  [class.input-valid]="isFieldValid(field.key)"
+                  [class.input-invalid]="getFieldError(field.key)"
+                ></ion-input>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                @if(getFieldError(field.key)) {
+                  <ion-icon
+                    name="alert-circle"
+                    color="danger"
+                    slot="end"
+                  ></ion-icon>
+                }
+              </ion-item>
+            }
+
+            <!-- Phone Input -->
+            @if(field.type === 'tel') {
+              <ion-item >
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <ion-input
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder"
+                  type="tel"
+                  [class.input-valid]="isFieldValid(field.key)"
+                  [class.input-invalid]="getFieldError(field.key)"
+                ></ion-input>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                @if(getFieldError(field.key)) {
+                  <ion-icon
+                    name="alert-circle"
+                    color="danger"
+                    slot="end"
+                  ></ion-icon>
+                }
+              </ion-item>
+            }
+
+
+            <!-- Text Input -->
+            @if(field.type === 'text') {
+              <ion-item >
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <ion-input
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder"
+                  [class.input-valid]="isFieldValid(field.key)"
+                  [class.input-invalid]="getFieldError(field.key)"
+                ></ion-input>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                @if(getFieldError(field.key)) {
+                  <ion-icon
+                    name="alert-circle"
+                    color="danger"
+                    slot="end"
+                  ></ion-icon>
+                }
+
+              </ion-item>
+            }
+
+            <!-- URL Input -->
+            @if(field.type === 'url') {
+              <ion-item >
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <ion-input
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder"
+                  type="url"
+                  [class.input-valid]="isFieldValid(field.key)"
+                  [class.input-invalid]="getFieldError(field.key)"
+                ></ion-input>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                @if(getFieldError(field.key)) {
+                  <ion-icon
+                    name="alert-circle"
+                    color="danger"
+                    slot="end"
+                  ></ion-icon>
+                }
+              </ion-item>
+            }
+
+            <!-- Textarea -->
+            @if(field.type === 'textarea') {
+              <ion-item >
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <ion-textarea
+                  [formControlName]="field.key"
+                  [placeholder]="field.placeholder"
+                  rows="3"
+                  [class.input-valid]="isFieldValid(field.key)"
+                  [class.input-invalid]="getFieldError(field.key)"
+                ></ion-textarea>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                @if(getFieldError(field.key)) {
+                  <ion-icon
+                    name="alert-circle"
+                    color="danger"
+                    slot="end"
+                  ></ion-icon>
+                }
+              </ion-item>
+            }
+            <!-- Color Picker -->
+            @if(field.type === 'color') {
+              <ion-item>
+                <ion-label position="stacked">
+                  {{ field.label }}
+                  @if(field.required) {
+                    <ion-text color="danger">*</ion-text>
+                  }
+                </ion-label>
+                <div class="color-picker-container">
+                  <input
+                    type="color"
+                    [formControlName]="field.key"
+                    class="color-picker"
+                  />
+                  <ion-text class="color-value">{{ form.get(field.key)?.value }}</ion-text>
+                </div>
+                @if(isFieldValid(field.key)) {
+                  <ion-icon
+                    name="checkmark-circle"
+                    color="success"
+                    slot="end"
+                  ></ion-icon>
+                }
+                <!-- Field Error Message -->
+                @if(getFieldError(field.key)) {
+                  <ion-text
+                    color="danger"
+                    class="error-message"
+                  >
+                    {{ getFieldError(field.key) }}
+                  </ion-text>
+                }
+              </ion-item>
+            }
+        }
+
+        <!-- Form Actions -->
+        <div class="form-actions">
+          <ion-button
+            type="submit"
+            expand="block"
+            [disabled]="!form.valid"
+            color="primary"
+          >
+            {{ config.mode === 'create' ? 'Create' : 'Update' }}
+          </ion-button>
+
+          <ion-button
+            type="button"
+            expand="block"
+            fill="outline"
+            (click)="onReset()"
+          >
+            Reset
+          </ion-button>
+        </div>
+        </form>
+    </ion-col>
+  </ion-row>
+</ion-grid>
